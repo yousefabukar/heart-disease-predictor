@@ -3,7 +3,10 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix, classification_report
 import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # loading data
 data = pd.read_csv('heart.csv')
@@ -26,11 +29,7 @@ joblib.dump(model, 'heart_disease_model.joblib')
 joblib.dump(scaler, 'scaler.joblib')
 
 def predict_heart_disease(patient_data):
-    """
-    Predict heart disease risk based on patient data.
-    parameters is patient_data: A dictionary containing patient information
-    return: 1 for high risk (>= 0.5), 0 for low/not at risk (< 0.5)
-    """
+    # predict heart disease based on patient data
     # load model and scaler
     model = joblib.load('heart_disease_model.joblib')
     scaler = joblib.load('scaler.joblib')
@@ -50,3 +49,51 @@ def predict_heart_disease(patient_data):
     
     # Return 1 for high risk, 0 for low risk
     return 1 if probability >= 0.5 else 0
+
+# Function to display confusion matrix
+def display_confusion_matrix(y_true, y_pred):
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(10,7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+    plt.title('Confusion Matrix')
+    plt.ylabel('Actual')
+    plt.xlabel('Predicted')
+    plt.show()
+
+
+X_test_scaled = scaler.transform(X_test)
+y_pred = model.predict(X_test_scaled)
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+
+display_confusion_matrix(y_test, y_pred)
+
+# Sample case demonstration
+sample_patient = {
+    'age': 55,
+    'sex': 1,
+    'cp': 1,
+    'trestbps': 140,
+    'chol': 240,
+    'fbs': 0,
+    'restecg': 1,
+    'thalach': 150,
+    'exang': 0,
+    'oldpeak': 1.8,
+    'slope': 1,
+    'ca': 0,
+    'thal': 2
+}
+
+prediction = predict_heart_disease(sample_patient)
+probability = model.predict_proba(scaler.transform(pd.DataFrame([sample_patient])))[0][1]
+
+print("\nSample Case Demonstration:")
+print(f"Patient Data: {sample_patient}")
+print(f"Prediction: {'High risk of heart disease' if prediction == 1 else 'Low risk of heart disease'}")
+print(f"Probability: {probability:.2%}")
+print(f"Logistic Regression Output: {probability:.4f}")
+
+if __name__ == "__main__":
+    pass
