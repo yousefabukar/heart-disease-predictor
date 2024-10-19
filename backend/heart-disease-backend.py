@@ -50,36 +50,3 @@ def predict_heart_disease(patient_data):
     
     # Return 1 for high risk, 0 for low risk
     return 1 if probability >= 0.5 else 0
-
-if __name__ == "__main__":
-    # Sample patient data
-    example_patient = {
-        'age': 55,
-        'sex': 1,  # Assuming 1 for male, 0 for female
-        'cp': 1,   # Chest pain type
-        'trestbps': 140,  # Resting blood pressure
-        'chol': 240,  # Serum cholesterol
-        'fbs': 0,  # Fasting blood sugar < 120 mg/dl
-        'restecg': 1,  # Resting ECG results
-        'thalach': 150,  # Maximum heart rate achieved
-        'exang': 0,  # Exercise induced angina
-        'oldpeak': 1.8,  # ST depression induced by exercise relative to rest
-        'slope': 1,  # The slope of the peak exercise ST segment
-        'ca': 0,  # Number of major vessels colored by fluoroscopy
-        'thal': 2  # Thalassemia
-    }
-
-    # Make prediction
-    prediction = predict_heart_disease(example_patient)
-    
-    # Load model to get probability
-    model = joblib.load('heart_disease_model.joblib')
-    scaler = joblib.load('scaler.joblib')
-    input_df = pd.DataFrame([example_patient])
-    input_scaled = scaler.transform(input_df)
-    probability = model.predict_proba(input_scaled)[0][1]
-
-    # Print results
-    print(f"Patient Data: {example_patient}")
-    print(f"Prediction: {'High Risk' if prediction == 1 else 'Low Risk'}")
-    print(f"Probability of Heart Disease: {probability:.2f}")
