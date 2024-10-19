@@ -1,5 +1,13 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 
+// Inline prediction function
+function predict_heart_disease(patientData: any): number {
+  // This is a placeholder function that returns a random risk value
+  // Replace this with actual API call when you have a backend set up
+  console.log('Patient data received:', patientData);
+  return Math.random() < 0.5 ? 0 : 1;
+}
+
 interface FormData {
   age: string;
   sex: string;
@@ -17,7 +25,7 @@ interface FormData {
 }
 
 interface HeartDiseaseCalculatorProps {
-  onCalculateRisk: (risk: number) => void;
+  onCalculateRisk: (risk: number, probability: number) => void;
 }
 
 const HeartDiseaseCalculator: React.FC<HeartDiseaseCalculatorProps> = ({ onCalculateRisk }) => {
@@ -46,12 +54,31 @@ const HeartDiseaseCalculator: React.FC<HeartDiseaseCalculatorProps> = ({ onCalcu
     e.preventDefault();
     console.log('Form submitted:', formData);
     
-    // Placeholder for risk calculation
-    // Replace this with your actual model integration later
-    const risk = Math.random() < 0.5 ? 0 : 1;
+    // Convert form data to the format expected by your prediction function
+    const patientData = {
+      age: parseInt(formData.age),
+      sex: formData.sex === 'male' ? 1 : 0,
+      cp: parseInt(formData.cp),
+      trestbps: parseInt(formData.trestbps),
+      chol: parseInt(formData.chol),
+      fbs: formData.fbs === 'true' ? 1 : 0,
+      restecg: parseInt(formData.restecg),
+      thalach: parseInt(formData.thalach),
+      exang: formData.exang === 'yes' ? 1 : 0,
+      oldpeak: parseFloat(formData.oldpeak),
+      slope: parseInt(formData.slope),
+      ca: parseInt(formData.ca),
+      thal: parseInt(formData.thal)
+    };
 
-    // Call the onCalculateRisk prop with the calculated risk
-    onCalculateRisk(risk);
+    // Call the prediction function
+    const risk = predict_heart_disease(patientData);
+    
+    // For probability, we'll use a placeholder since the function doesn't return it
+    const probability = risk === 1 ? 0.75 : 0.25; // Placeholder values
+
+    // Call the onCalculateRisk prop with the results
+    onCalculateRisk(risk, probability);
   };
 
   const styles = {
@@ -139,10 +166,10 @@ const HeartDiseaseCalculator: React.FC<HeartDiseaseCalculatorProps> = ({ onCalcu
           <label htmlFor="cp" style={styles.label}>Chest Pain Type:</label>
           <select id="cp" name="cp" value={formData.cp} onChange={handleInputChange} required style={styles.select}>
             <option value="">Select</option>
-            <option value="typical angina">Typical Angina</option>
-            <option value="atypical angina">Atypical Angina</option>
-            <option value="non-anginal pain">Non-anginal Pain</option>
-            <option value="asymptomatic">Asymptomatic</option>
+            <option value="0">Typical Angina</option>
+            <option value="1">Atypical Angina</option>
+            <option value="2">Non-anginal Pain</option>
+            <option value="3">Asymptomatic</option>
           </select>
         </div>
         <div style={styles.formGroup}>
@@ -165,9 +192,9 @@ const HeartDiseaseCalculator: React.FC<HeartDiseaseCalculatorProps> = ({ onCalcu
           <label htmlFor="restecg" style={styles.label}>Resting ECG:</label>
           <select id="restecg" name="restecg" value={formData.restecg} onChange={handleInputChange} required style={styles.select}>
             <option value="">Select</option>
-            <option value="normal">Normal</option>
-            <option value="st-t wave abnormality">ST-T Wave Abnormality</option>
-            <option value="left ventricular hypertrophy">Left Ventricular Hypertrophy</option>
+            <option value="0">Normal</option>
+            <option value="1">ST-T Wave Abnormality</option>
+            <option value="2">Left Ventricular Hypertrophy</option>
           </select>
         </div>
         <div style={styles.formGroup}>
@@ -190,9 +217,9 @@ const HeartDiseaseCalculator: React.FC<HeartDiseaseCalculatorProps> = ({ onCalcu
           <label htmlFor="slope" style={styles.label}>Slope of Peak Exercise ST Segment:</label>
           <select id="slope" name="slope" value={formData.slope} onChange={handleInputChange} required style={styles.select}>
             <option value="">Select</option>
-            <option value="upsloping">Upsloping</option>
-            <option value="flat">Flat</option>
-            <option value="downsloping">Downsloping</option>
+            <option value="0">Upsloping</option>
+            <option value="1">Flat</option>
+            <option value="2">Downsloping</option>
           </select>
         </div>
         <div style={styles.formGroup}>
@@ -203,9 +230,9 @@ const HeartDiseaseCalculator: React.FC<HeartDiseaseCalculatorProps> = ({ onCalcu
           <label htmlFor="thal" style={styles.label}>Thalassemia:</label>
           <select id="thal" name="thal" value={formData.thal} onChange={handleInputChange} required style={styles.select}>
             <option value="">Select</option>
-            <option value="normal">Normal</option>
-            <option value="fixed defect">Fixed Defect</option>
-            <option value="reversible defect">Reversible Defect</option>
+            <option value="1">Normal</option>
+            <option value="2">Fixed Defect</option>
+            <option value="3">Reversible Defect</option>
           </select>
         </div>
         <button type="submit" style={styles.button}>Calculate Risk</button>
